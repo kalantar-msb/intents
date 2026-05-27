@@ -497,6 +497,117 @@ body {
 .changelog-event .added { color: var(--satisfied); }
 .changelog-event .modified { color: var(--in-progress); }
 .changelog-event .regressed { color: var(--regressed); }
+
+/* =============================================
+   SLIDE 5: GOAL FULFILLMENT TREE
+   ============================================= */
+
+.goal-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto 1fr;
+  gap: 16px;
+  flex: 1;
+}
+
+.goal-header {
+  grid-column: 1 / -1;
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.goal-progress-ring {
+  width: 64px; height: 64px; flex-shrink: 0; position: relative;
+}
+
+.goal-progress-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.goal-progress-ring .ring-bg { fill: none; stroke: var(--surface-raised); stroke-width: 6; }
+.goal-progress-ring .ring-fill { fill: none; stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset 0.6s; }
+.goal-progress-ring .ring-fill.satisfied { stroke: var(--satisfied); }
+
+.goal-progress-label {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600; color: var(--text-primary);
+}
+
+.goal-info { flex: 1; }
+.goal-name { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+.goal-scope { font-size: 12px; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+.goal-summary { font-size: 13px; color: var(--text-secondary); margin-top: 6px; }
+
+.goal-stats {
+  display: flex; gap: 20px;
+}
+
+.goal-stat { text-align: center; }
+.goal-stat .gs-value { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 600; }
+.goal-stat .gs-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.goal-stat.gs-done .gs-value { color: var(--satisfied); }
+.goal-stat.gs-wip .gs-value { color: var(--in-progress); }
+.goal-stat.gs-gap .gs-value { color: var(--blocked); }
+
+.tree-panel {
+  grid-column: 1 / -1;
+}
+
+.tree-node {
+  margin-left: 0;
+}
+
+.tree-node .tree-node {
+  margin-left: 28px;
+  border-left: 1px solid var(--border-subtle);
+  padding-left: 16px;
+}
+
+.tree-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; margin: 3px 0;
+  border-radius: 6px; border: 1px solid transparent;
+}
+.tree-item:hover { background: var(--surface-hover); border-color: var(--border-subtle); }
+
+.tree-expand {
+  width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;
+  font-size: 10px; color: var(--text-muted); cursor: pointer; flex-shrink: 0;
+  border-radius: 3px; background: var(--surface-raised); border: 1px solid var(--border-subtle);
+}
+
+.tree-item-info { flex: 1; }
+.tree-item-name { font-size: 13px; color: var(--text-primary); }
+.tree-item-meta { font-size: 10px; color: var(--text-muted); margin-top: 2px; display: flex; gap: 10px; }
+
+.tree-rel-badge {
+  font-size: 9px; font-family: 'JetBrains Mono', monospace;
+  padding: 1px 6px; border-radius: 3px;
+  background: var(--surface-raised); border: 1px solid var(--border-subtle); color: var(--text-muted);
+}
+
+.artifact-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 10px; margin: 3px 0;
+  border-radius: 6px; background: var(--surface-raised); border: 1px dashed var(--border);
+}
+.artifact-icon { font-size: 12px; color: var(--text-muted); width: 18px; text-align: center; }
+.artifact-name { font-size: 12px; color: var(--text-secondary); flex: 1; }
+.artifact-link { font-size: 10px; color: var(--accent); font-family: 'JetBrains Mono', monospace; }
+
+.deps-panel { }
+.dep-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; margin-bottom: 6px;
+  border-radius: 6px; border: 1px solid var(--border-subtle); background: var(--surface-raised);
+}
+.dep-item .dep-label {
+  font-size: 10px; color: var(--text-muted); text-transform: uppercase;
+  font-family: 'JetBrains Mono', monospace; width: 70px; flex-shrink: 0;
+}
+.dep-item .dep-name { font-size: 12px; color: var(--text-primary); flex: 1; }
 </style>
 </head>
 <body>
@@ -506,6 +617,7 @@ body {
   <div class="nav-dot" onclick="document.getElementById('s2').scrollIntoView()"></div>
   <div class="nav-dot" onclick="document.getElementById('s3').scrollIntoView()"></div>
   <div class="nav-dot" onclick="document.getElementById('s4').scrollIntoView()"></div>
+  <div class="nav-dot" onclick="document.getElementById('s5').scrollIntoView()"></div>
 </nav>
 
 <!-- ===================== SLIDE 1: STRATEGIST ===================== -->
@@ -984,6 +1096,217 @@ body {
   </div>
 
   <p class="annotation">Scope owner monitors graph health: consistency, coverage gaps (which org intents lack refinements where), aging conflicts, staleness. The coverage matrix is the key diagnostic — empty cells are actionable gaps to investigate.</p>
+</section>
+
+<!-- ===================== SLIDE 5: GOAL FULFILLMENT ===================== -->
+<section class="slide" id="s5">
+  <div class="role-badge">Goal View</div>
+  <div class="slide-title">Intent Management System</div>
+  <h1 class="slide-heading">Goal Fulfillment — Resilient Under Failure</h1>
+
+  <div class="goal-layout">
+    <!-- Header: the goal with overall progress -->
+    <div class="goal-header">
+      <div class="goal-progress-ring">
+        <svg viewBox="0 0 64 64">
+          <circle class="ring-bg" cx="32" cy="32" r="26"/>
+          <circle class="ring-fill satisfied" cx="32" cy="32" r="26"
+            stroke-dasharray="163.4" stroke-dashoffset="49"/>
+        </svg>
+        <div class="goal-progress-label">70%</div>
+      </div>
+      <div class="goal-info">
+        <div class="goal-name">Resilient Under Failure</div>
+        <div class="goal-scope">sim2real/project · refines → org/resilient-under-failure</div>
+        <div class="goal-summary">Transient failures are retried with backoff. Permanent failures are surfaced immediately. The system never hangs indefinitely on either.</div>
+      </div>
+      <div class="goal-stats">
+        <div class="goal-stat gs-done"><div class="gs-value">7</div><div class="gs-label">Satisfied</div></div>
+        <div class="goal-stat gs-wip"><div class="gs-value">3</div><div class="gs-label">In Progress</div></div>
+        <div class="goal-stat gs-gap"><div class="gs-value">2</div><div class="gs-label">Blocked/Gap</div></div>
+      </div>
+    </div>
+
+    <!-- Tree: the fulfillment structure -->
+    <div class="panel tree-panel">
+      <div class="panel-title">Fulfillment Tree — sub-intents, derived intents, and artifacts</div>
+
+      <div class="tree-node">
+        <!-- Decomposition: Retry behavior -->
+        <div class="tree-item">
+          <div class="tree-expand">▾</div>
+          <div class="tree-item-info">
+            <div class="tree-item-name">Exponential backoff on GPU scarcity</div>
+            <div class="tree-item-meta"><span class="tree-rel-badge">decomposition</span> <span>sim2real/res-32</span></div>
+          </div>
+          <span class="status-pill satisfied" style="font-size:10px"><span class="status-dot"></span>Verified</span>
+        </div>
+        <div class="tree-node">
+          <div class="artifact-item">
+            <div class="artifact-icon">◆</div>
+            <div class="artifact-name">orchestrator/backoff.py — BackoffController class</div>
+            <div class="artifact-link">PR #198</div>
+          </div>
+          <div class="artifact-item">
+            <div class="artifact-icon">◆</div>
+            <div class="artifact-name">tests/test_backoff.py — 14 test cases</div>
+            <div class="artifact-link">PR #198</div>
+          </div>
+        </div>
+
+        <!-- Decomposition: Failure classification -->
+        <div class="tree-item">
+          <div class="tree-expand">▾</div>
+          <div class="tree-item-info">
+            <div class="tree-item-name">Recoverable vs non-recoverable failure classification</div>
+            <div class="tree-item-meta"><span class="tree-rel-badge">decomposition</span> <span>sim2real/res-33</span></div>
+          </div>
+          <span class="status-pill satisfied" style="font-size:10px"><span class="status-dot"></span>Satisfied</span>
+        </div>
+        <div class="tree-node">
+          <div class="tree-item">
+            <div class="tree-expand">·</div>
+            <div class="tree-item-info">
+              <div class="tree-item-name">Pod pending reasons mapped to recovery strategy</div>
+              <div class="tree-item-meta"><span class="tree-rel-badge">derived</span> <span>sim2real/res-33a</span></div>
+            </div>
+            <span class="status-pill satisfied" style="font-size:10px"><span class="status-dot"></span>Satisfied</span>
+          </div>
+          <div class="tree-node">
+            <div class="artifact-item">
+              <div class="artifact-icon">◆</div>
+              <div class="artifact-name">orchestrator/health.py — classify_pending_reason()</div>
+              <div class="artifact-link">PR #215</div>
+            </div>
+          </div>
+          <div class="tree-item">
+            <div class="tree-expand">·</div>
+            <div class="tree-item-info">
+              <div class="tree-item-name">Config errors surfaced immediately (not waited out)</div>
+              <div class="tree-item-meta"><span class="tree-rel-badge">derived</span> <span>sim2real/res-33b</span></div>
+            </div>
+            <span class="status-pill satisfied" style="font-size:10px"><span class="status-dot"></span>Satisfied</span>
+          </div>
+        </div>
+
+        <!-- Decomposition: Reclaim escalation -->
+        <div class="tree-item">
+          <div class="tree-expand">▾</div>
+          <div class="tree-item-info">
+            <div class="tree-item-name">Reclaim-based escalation</div>
+            <div class="tree-item-meta"><span class="tree-rel-badge">decomposition</span> <span>sim2real/res-34</span></div>
+          </div>
+          <span class="status-pill in-progress" style="font-size:10px"><span class="status-dot"></span>In Progress</span>
+        </div>
+        <div class="tree-node">
+          <div class="artifact-item">
+            <div class="artifact-icon">◆</div>
+            <div class="artifact-name">orchestrator/backoff.py — reclaim counter (partial)</div>
+            <div class="artifact-link">branch: reclaim-escalation</div>
+          </div>
+          <div class="tree-item" style="opacity:0.6">
+            <div class="tree-expand">·</div>
+            <div class="tree-item-info">
+              <div class="tree-item-name" style="color:var(--text-muted)">Window-based detection (3+ in 600s)</div>
+              <div class="tree-item-meta"><span class="tree-rel-badge">derived</span> <span style="color:var(--blocked)">no artifact yet</span></div>
+            </div>
+            <span class="status-pill draft" style="font-size:10px"><span class="status-dot"></span>Gap</span>
+          </div>
+        </div>
+
+        <!-- Decomposition: Graceful degradation -->
+        <div class="tree-item">
+          <div class="tree-expand">▾</div>
+          <div class="tree-item-info">
+            <div class="tree-item-name">Graceful degradation on API failure</div>
+            <div class="tree-item-meta"><span class="tree-rel-badge">refinement</span> <span>sim2real/res-35 ← org/no-silent-loss</span></div>
+          </div>
+          <span class="status-pill in-progress" style="font-size:10px"><span class="status-dot"></span>In Progress</span>
+        </div>
+        <div class="tree-node">
+          <div class="tree-item">
+            <div class="tree-expand">·</div>
+            <div class="tree-item-info">
+              <div class="tree-item-name">ConfigMap "not found" distinct from "connection error"</div>
+              <div class="tree-item-meta"><span class="tree-rel-badge">derived</span> <span>sim2real/safety-55</span></div>
+            </div>
+            <span class="status-pill in-progress" style="font-size:10px"><span class="status-dot"></span>In Progress</span>
+          </div>
+        </div>
+
+        <!-- Decomposition: Timeout protection (BLOCKED) -->
+        <div class="tree-item" style="border-color:var(--blocked-border); background:var(--blocked-bg); border-style:solid;">
+          <div class="tree-expand">!</div>
+          <div class="tree-item-info">
+            <div class="tree-item-name">Timeout protection on external calls</div>
+            <div class="tree-item-meta">
+              <span class="tree-rel-badge">refinement</span>
+              <span>sim2real/res-36 ← org/timeout-policy</span>
+              <span style="color:var(--blocked)">BLOCKED: conflicts with "minimize orchestrator complexity"</span>
+            </div>
+          </div>
+          <span class="status-pill blocked" style="font-size:10px"><span class="status-dot"></span>Blocked</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dependencies -->
+    <div class="panel deps-panel">
+      <div class="panel-title">Dependencies (must be satisfied first)</div>
+      <div class="dep-item">
+        <span class="dep-label">requires</span>
+        <span class="dep-name">Subprocess isolation (all external calls wrapped)</span>
+        <span class="status-pill satisfied" style="font-size:10px"><span class="status-dot"></span>Verified</span>
+      </div>
+      <div class="dep-item">
+        <span class="dep-label">requires</span>
+        <span class="dep-name">Structured error types (recoverable vs fatal enum)</span>
+        <span class="status-pill satisfied" style="font-size:10px"><span class="status-dot"></span>Satisfied</span>
+      </div>
+      <div class="dep-item" style="border-color:var(--blocked-border);">
+        <span class="dep-label" style="color:var(--blocked)">blocked</span>
+        <span class="dep-name">Org timeout policy needs repo refinement (from you)</span>
+        <span class="status-pill blocked" style="font-size:10px"><span class="status-dot"></span>Pending</span>
+      </div>
+    </div>
+
+    <!-- Artifacts summary -->
+    <div class="panel">
+      <div class="panel-title">Artifacts Contributing to This Goal</div>
+      <div class="artifact-item">
+        <div class="artifact-icon">◆</div>
+        <div class="artifact-name">orchestrator/backoff.py</div>
+        <div class="artifact-link">satisfies res-32, res-34</div>
+      </div>
+      <div class="artifact-item">
+        <div class="artifact-icon">◆</div>
+        <div class="artifact-name">orchestrator/health.py</div>
+        <div class="artifact-link">satisfies res-33</div>
+      </div>
+      <div class="artifact-item">
+        <div class="artifact-icon">◆</div>
+        <div class="artifact-name">orchestrator/progress.py</div>
+        <div class="artifact-link">satisfies res-35 (partial)</div>
+      </div>
+      <div class="artifact-item">
+        <div class="artifact-icon">◆</div>
+        <div class="artifact-name">tests/test_backoff.py</div>
+        <div class="artifact-link">verifies res-32</div>
+      </div>
+      <div class="artifact-item">
+        <div class="artifact-icon">◆</div>
+        <div class="artifact-name">tests/test_health.py</div>
+        <div class="artifact-link">verifies res-33</div>
+      </div>
+      <div class="artifact-item" style="opacity:0.5; border-style:dashed;">
+        <div class="artifact-icon" style="color:var(--blocked)">○</div>
+        <div class="artifact-name" style="color:var(--text-muted)">No artifact yet for: timeout protection, window-based reclaim detection</div>
+        <div class="artifact-link"></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="annotation">Goal fulfillment view: pick any goal-type intent and see its full tree — sub-intents (decomposition), derived intents (necessary conditions), and the artifacts that satisfy each. Gaps (nodes with no artifact) are visible. Dependencies show what must be satisfied before this goal can complete. This is how you answer "what's left?" and "what's blocking completion?"</p>
 </section>
 
 <script>
